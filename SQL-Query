@@ -1,0 +1,72 @@
+import gradio as gr
+import re
+import sqlite3
+from datetime import datetime
+schema = {
+    "users": ["id","name","email","signup_date","age","country","status"],
+    "orders": ["id","user_id","product_name","amount","order_date","status"],
+    "products": ["id","name","price","category","stock"],
+    "transactions": ["id","user_id","amount","date","type"]
+}
+dangerous_keywords = ["DROP","DELETE","ALTER","TRUNCATE","INSERT","UPDATE"]
+
+def is_safe(text):
+    for word in dangerous_keywords:
+        if word.lower() in text.lower():
+            return False
+    return True
+def get_table_name(query):
+
+    query=query.lower()
+
+    if "user" in query:
+        return "users"
+
+    elif "order" in query:
+        return "orders"
+
+    elif "product" in query:
+        return "products"
+
+    elif "transaction" in query:
+        return "transactions"
+def generate_sql(query):
+
+    if not is_safe(query):
+        return "Unsafe Query Detected"
+
+    table = get_table_name(query)
+
+    sql = f"SELECT * FROM {table} LIMIT 10"
+
+    return sql
+def chatbot(query):
+    sql = generate_sql(query)
+    return sql
+
+demo = gr.Interface(
+    fn=chatbot,
+    inputs="text",
+    outputs="text",
+    title="SQL Query Generator",
+    description="Convert natural language to SQL query"
+)
+def chatbot(query):
+    sql = generate_sql(query)
+    return sql
+
+demo = gr.Interface(
+    fn=chatbot,
+    inputs="text",
+    outputs="text",
+    title="SQL Query Generator",
+    description="Convert natural language to SQL query"
+)
+
+
+
+
+
+
+
+    return "users"
